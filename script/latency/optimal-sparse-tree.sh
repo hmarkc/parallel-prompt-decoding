@@ -4,7 +4,7 @@
 python accept_length.py \
   --dir-path ./data/alpaca_eval/dynamic_sparse_tree_search/3-1-7b \
   --file-name dynamic_sparse_tree \
-  --model-name ../test/vicuna-7b-3-1 \
+  --model-name hmarkc/ppd-vicuna-7b-v1.3 \
   --eval-file-name gen_model_answer_prompt_decoding.py \
   --run-baseline \
   --n 1 \
@@ -16,7 +16,7 @@ python accept_length.py \
 
 # latency for Vicuna 7b
 python3 tree_latency.py \
- --model-path ../test/vicuna-7b-3-1 \
+ --model-path hmarkc/ppd-vicuna-7b-v1.3 \
  --model-id vicuna_faster \
  --answer-file ./data/alpaca_eval/dynamic_sparse_tree_search/3-1-7b-21-04/tree_latency.jsonl \
  --bench-name alpaca_eval \
@@ -29,7 +29,7 @@ python3 tree_latency.py \
 python accept_length.py \
   --dir-path ./data/alpaca_eval/dynamic_sparse_tree_search/3-1-13b \
   --file-name dynamic_sparse_tree \
-  --model-name ../test/vicuna-13b-3-1\
+  --model-name hmarkc/ppd-vicuna-13b-v1.3\
   --eval-file-name gen_model_answer_prompt_decoding.py \
   --max-length 120 \
   --min-length 60 \
@@ -38,7 +38,7 @@ python accept_length.py \
 
 # latency for Vicuna 13b
 python3 tree_latency.py \
- --model-path ../test/vicuna-13b-3-1 \
+ --model-path hmarkc/ppd-vicuna-13b-v1.3 \
  --model-id vicuna_faster \
  --answer-file ./data/alpaca_eval/dynamic_sparse_tree_search/3-1-13b/tree_latency.jsonl \
  --bench-name alpaca_eval \
@@ -51,7 +51,7 @@ python3 tree_latency.py \
 # python accept_length.py \
 #   --dir-path data/alpaca_eval/sparse_tree_search/3-1-7b/ \
 #   --file-name full_sparse_tree \
-#   --model-name ../test/vicuna-7b-3-1 \
+#   --model-name hmarkc/ppd-vicuna-7b-v1.3 \
 #   --eval-file-name gen_model_answer_full_sparse_tree.py \
 #   --choices "[5, 10, 20, 35, 60, 120, 200, 500]" \
 #   --n 1 \
@@ -59,7 +59,7 @@ python3 tree_latency.py \
 # python accept_length.py \
   # --dir-path data/alpaca_eval/sparse_tree_search/3-1-13b/ \
   # --file-name sparse_tree \
-  # --model-name ../test/vicuna-13b-3-1 \
+  # --model-name hmarkc/ppd-vicuna-13b-v1.3 \
   # --eval-file-name gen_model_answer_full_sparse_tree.py \
   # --max-length 120 \
   # --min-length 60 \
@@ -70,7 +70,7 @@ python3 tree_latency.py \
 python accept_length.py \
   --dir-path data/alpaca_eval/random_tree_search/3-1-7b/ \
   --file-name random_sparse_tree \
-  --model-name ../test/vicuna-7b-3-1 \
+  --model-name hmarkc/ppd-vicuna-7b-v1.3 \
   --eval-file-name gen_model_answer_random_sparse_tree.py \
   --choices "[5, 10, 20, 35, 60, 120, 200, 500]" \
   --n 1 \

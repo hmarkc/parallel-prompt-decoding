@@ -3,7 +3,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "prompt-decoding"
+name = "parallel-prompt-decoding"
 version = "1.0"
 description = "Cheap and efficient LLM inference Acceleration using Prompting"
 packages = [
@@ -29,5 +29,7 @@ sentencepiece = "*"
 protobuf = "^4.25.3"
 matplotlib = "*"
 gradio = "*"
-
-
+openai = "*"
+anthropic = "*"
+zeus-ml = "*"
+human_eval = "*"
