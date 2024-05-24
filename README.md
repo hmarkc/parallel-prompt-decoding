@@ -27,7 +27,7 @@ The key intuition of **PPD** lies in the observation that if trained properly, p
 </div>
 <div align="center">
   <picture>
-  <img src="assets/Speed_Mem_Train.png" width="80%">
+  <img src="assets/Speed_Mem_Train.png" width="50%">
   </picture>
   <br>
   <div align="center" width="100%">
@@ -35,7 +35,7 @@ The key intuition of **PPD** lies in the observation that if trained properly, p
   <br>
 </div>
 
-**PPD** is desinged to address the following challenges faced by the current speculative decoding methods:
+**PPD** is designed to address the following challenges faced by the current speculative decoding methods:
 
 - Low step compression rate due to conditional independence assumption.
 - High complexity and cost of training/maintaining draft models.
@@ -45,7 +45,7 @@ Through extensive experiments across LLMs ranging from MobileLlama to Vicuna-13B
 
 <div align="center">
   <picture>
-  <img src="assets/latency.png" width="80%">
+  <img src="assets/latency.png" width="45%">
   </picture>
   <br>
   <div align="center" width="100%">
@@ -89,7 +89,7 @@ pip install -e .
 
 ### Truncated Dataset
 
-With a given dataset, a random truncation is performed to reduce the contextual bias of the training of sepcial tokens. Then, a distillation dataset is generated from the truncated dataset.
+With a given dataset, a random truncation is performed to reduce the contextual bias of the training of special tokens. Then, a distillation dataset is generated from the truncated dataset.
 
 The truncated datasets need to be generated first. Here is how a dataset for 3 special tokens can be generated for the ShareGPT dataset.
 
@@ -132,7 +132,7 @@ accelerate launch --num_processes 4 prompt/train/train.py --model_name_or_path l
     --trainer_type "distillation_trainer"
 ```
 
-You need to change the `--dataset_path` to the the location of the distillation dataset and specify `--trainer_type` as "distillation_trainer" to train with knowledge distillation. `--num_special_tokens` specifies the number of special tokens for training. `--virtual_tokens_per_special_token` is the number of virtual tokens used for 1 special token, which should be set to 1 to achieve the lowest latency results.
+You need to change the `--dataset_path` to the location of the distillation dataset and specify `--trainer_type` as "distillation_trainer" to train with knowledge distillation. `--num_special_tokens` specifies the number of special tokens for training. `--virtual_tokens_per_special_token` is the number of virtual tokens used for 1 special token, which should be set to 1 to achieve the lowest latency results.
 
 ## Inference
 
@@ -142,7 +142,7 @@ Refer to this [README.md](application/README.md) on how to install libraries for
 
 ### Chat Application
 
-We implemeted a simple chat application using `gradio`. To start a server for the chat application, run `python application/webui.py --ppd-path <ppd-model-path>`.
+We implemented a simple chat application using `gradio`. To start a server for the chat application, run `python application/webui.py --ppd-path <ppd-model-path>`.
 
 ### MT Bench
 
