@@ -1,0 +1,8 @@
+__pycache__
+venv
+data
+ShareGPT_Vicuna_unfiltered/
+test*
+log
+*egg-info
+*log
