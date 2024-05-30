@@ -1,6 +1,9 @@
-<img src="./assets/PPD_LOGO.png" alt="PPD" width="100" align="left"><div align="center"><h1>Parallel Prompt Decoding: Accelerate LLM Inference with Prompting</h1></div>
+<img src="./assets/PPD_LOGO.png" alt="PPD" width="100" align="left"><div align="center"><h1>Parallel Prompt Decoding: Accelerate LLM Inference with Parallel Prompting</h1></div>
 
-**PPD** (Parallel Prompt Decoding) is a simple yet efficient method to accelerate LLMs with trained appended prompt tokens.
+**PPD** (Parallel Prompt Decoding) is a cost-efficient method to accelerate LLMs with trained appended prompt tokens. Our technique stands out for three key features: 
+- *Orthogonal Optimization*: Orthogonal to speculative decoding, PPD provides the potential for synergistic integration.
+- *Memory Efficiency*: With a minimal runtime memory overhead of just 0.0004%, PPD is highly suitable for edge and mobile settings.
+- *Training Efficiency*: The training process isefficient, requiring only 16 hours on a single A100-40GB GPU.
 
 <div align="center">
   <picture>
@@ -53,6 +56,16 @@ Through extensive experiments across LLMs ranging from MobileLlama to Vicuna-13B
   </div>
   <br>
 </div>
+
+Our paper is available ([here](https://arxiv.org/abs/2405.18628v1))! If you found it helpful, pls cite us:
+```
+@article{hao2024ppd,
+  title={Hardware-aware parallel prompt decoding for memory-efficient acceleration of LLM inference},
+  author={Chen, Hao (Mark) and Luk, Wayne and Yiu, Ka Fai Cedric and Li, Rui and Mishchenko, Konstantin and Venieris, Stylianos I and Fan, Hongxiang,
+  journal={arXiv preprint arXiv:2405.18628},
+  year={2024}
+}
+```
 
 ## Contents
 
@@ -217,3 +230,4 @@ The latency results of HumanEval can be obtained using the same script as MT Ben
 ### GSM8K
 
 The latency results of GSM8K can be obtained using the same script as MT Bench and adding `--bench-name gsm8k`.
+
