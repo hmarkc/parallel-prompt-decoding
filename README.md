@@ -3,7 +3,7 @@
 **PPD** (Parallel Prompt Decoding) is a cost-efficient method to accelerate LLMs with trained appended prompt tokens. Our technique stands out for three key features: 
 - *Orthogonal Optimization*: Orthogonal to speculative decoding, PPD provides the potential for synergistic integration.
 - *Memory Efficiency*: With a minimal runtime memory overhead of just 0.0004%, PPD is highly suitable for edge and mobile settings.
-- *Training Efficiency*: The training process isefficient, requiring only 16 hours on a single A100-40GB GPU.
+- *Training Efficiency*: The training process is efficient, requiring only 16 hours on a single A100-40GB GPU.
 
 <div align="center">
   <picture>
