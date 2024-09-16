@@ -65,6 +65,8 @@ class PromptDecoder(PeftModel):
             adapter_name (str, optional): The name of the adapter to be used. Defaults to 'default'. 
         """
         super().__init__(model, peft_config)
+        # prevent peft wrapper to overwrite peft_config
+        self.prompt_peft_config = {adapter_name: peft_config}
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(peft_config.base_model_name_or_path)
         self.base_model.model.prompt_token_indices = [-i for i in range(peft_config.num_virtual_tokens, 0, -1)]
         if peft_config.vt_attention_type == VTAttentionType.DECODER:
@@ -122,6 +124,12 @@ class PromptDecoder(PeftModel):
         
         # if peft_config.num_exits > 1:
         #     self.exit_weights = torch.nn.Parameter(torch.ones(peft_config.num_exits) / peft_config.num_exits).to(self.device)
+
+
+    @property
+    def active_peft_config(self):
+        return self.prompt_peft_config[self.active_adapter]
+    
 
     def add_custom_lm_head(self):
         self.custom_lm_head = torch.nn.Linear(self.base_model.config.hidden_size, self.base_model.config.vocab_size, bias=False)

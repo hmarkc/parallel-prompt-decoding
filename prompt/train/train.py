@@ -15,6 +15,7 @@ import torch.nn.functional as F
 from prompt.utils import *
 from prompt.model.model import PromptDecoder, PromptConfig, AutoPromptDecoder
 from prompt.model.modeling_llama_custom import LlamaForCausalLM as CustomLlamaForCausalLM
+from peft import get_peft_model, LoraConfig
 
 IGNORE_TOKEN_ID = LabelSmoother.ignore_index
 
@@ -31,7 +32,7 @@ class ParamEfficientFineTuner(Trainer):
         Returns:
             Union[float, Tuple[float, torch.Tensor]]: The computed loss, optionally with model outputs.
         """
-        num_special_tokens = self.model.active_peft_config.num_special_tokens
+        num_special_tokens = self.model.base_model.model.active_peft_config.num_special_tokens
         if torch.any(inputs["input_ids"][:, -1] == self.tokenizer.eos_token_id):
             warnings.warn("Input ends with EOS token.")
         input_ids = inputs["input_ids"]
@@ -218,10 +219,24 @@ def train():
             )
         else:
             raise ValueError("Only support llama for now")
-
+        # lora_config = LoraConfig(
+        #     r=0.5,
+        #     lora_alpha=0.5,
+        #     lora_dropout=0.075,
+        #     task_type="CAUSAL_LM",
+        # )
+        lora_config = LoraConfig(
+            task_type="CAUSAL_LM",
+            r=8,
+            lora_alpha=32,
+            # target_modules=["q", "v"],
+            lora_dropout=0.01,
+        )
+        # TODO: LORA + PPD doesn't work well, need modification of PPD
         for param in base_model.base_model.parameters():
             param.requires_grad = False
-        model = PromptDecoder(base_model, peft_config)
+        prompt_model = PromptDecoder(base_model, peft_config)
+        model  = get_peft_model(prompt_model, lora_config)
     print(model.print_trainable_parameters(), model)
 
     # Output dir
@@ -284,6 +299,8 @@ def train():
 
     # Save model
     model.save_pretrained(training_args.output_dir)
+    # Save ppd
+    model.base_model.model.save_pretrained(f"{training_args.output_dir}/ppd")
 
 if __name__ == "__main__":
     train()
