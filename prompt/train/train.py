@@ -236,8 +236,14 @@ def train():
         for param in base_model.base_model.parameters():
             param.requires_grad = False
         prompt_model = PromptDecoder(base_model, peft_config)
+        prompt_model.print_trainable_parameters()
         model  = get_peft_model(prompt_model, lora_config)
-    print(model.print_trainable_parameters(), model)
+        # make prompt model trainable
+        for n, param in prompt_model.named_parameters():
+            if 'prompt_encoder' in n:
+                print(n)
+                param.requires_grad = True
+    model.print_trainable_parameters()
 
     # Output dir
     training_args.output_dir = f"{training_args.output_dir}/prompt_{model_args.model_name_or_path.split('/')[-1]}_{model_args.num_special_tokens}_{model_args.virtual_tokens_per_special_token}_cl{training_args.model_max_length}_{model_args.vt_attention_type.upper()}_{model_args.aggregation_type}{'_custom_lm_head' if model_args.use_custom_lm_head else ''}{'_prefix' + str(model_args.prefix_virtual_tokens) if model_args.use_prefix_tuning else ''}_exits{model_args.num_exits}"
