@@ -32,7 +32,7 @@ class ParamEfficientFineTuner(Trainer):
         Returns:
             Union[float, Tuple[float, torch.Tensor]]: The computed loss, optionally with model outputs.
         """
-        num_special_tokens = self.model.base_model.model.active_peft_config.num_special_tokens
+        num_special_tokens = self.model.model.active_peft_config.num_special_tokens
         if torch.any(inputs["input_ids"][:, -1] == self.tokenizer.eos_token_id):
             warnings.warn("Input ends with EOS token.")
         input_ids = inputs["input_ids"]
@@ -245,11 +245,12 @@ def train():
                 print(n)
                 param.requires_grad = True
         print(prompt_model.peft_config)
+        print(type(model.base_model.model), type(model.model))
     model.print_trainable_parameters()
     print([key for key in get_peft_model_state_dict(model).keys()])
     set_peft_model_state_dict(model, get_peft_model_state_dict(model))
-    print([key for key in prompt_model.get_peft_model_state_dict().keys()])
-    prompt_model.set_peft_model_state_dict(prompt_model.get_peft_model_state_dict())
+    print([key for key in model.base_model.model.get_peft_model_state_dict().keys()])
+    model.model.set_peft_model_state_dict(model.model.get_peft_model_state_dict())
 
 
     # Output dir
