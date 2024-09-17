@@ -1,4 +1,4 @@
-from peft import PeftModel, PeftType, PromptTuningConfig, PromptTuningInit, PrefixTuningConfig, PromptEncoderConfig
+from peft import PeftModel, PeftType, PromptTuningConfig, PromptTuningInit, PrefixTuningConfig, PromptEncoderConfig, get_peft_model_state_dict, set_peft_model_state_dict
 from prompt.model.modeling_llama_custom import LlamaForCausalLM as CustomLlamaForCausalLM
 from transformers import AutoModelForCausalLM, AutoConfig
 from transformers.modeling_outputs import CausalLMOutputWithPast
@@ -126,9 +126,25 @@ class PromptDecoder(PeftModel):
         #     self.exit_weights = torch.nn.Parameter(torch.ones(peft_config.num_exits) / peft_config.num_exits).to(self.device)
 
 
+    # Overwrite the property to enable the use a PEFT wrapper 
     @property
     def active_peft_config(self):
         return self.prompt_peft_config[self.active_adapter]
+    
+    
+    def get_peft_model_state_dict(self):
+        prev_peft_config = self.peft_config
+        self.peft_config = self.prompt_peft_config
+        state_dict = get_peft_model_state_dict(self)
+        self.peft_config = prev_peft_config
+        return state_dict
+    
+    
+    def set_peft_model_state_dict(self, state_dict):
+        prev_peft_config = self.peft_config
+        self.peft_config = self.prompt_peft_config
+        set_peft_model_state_dict(self, state_dict)
+        self.peft_config = prev_peft_config
     
 
     def add_custom_lm_head(self):

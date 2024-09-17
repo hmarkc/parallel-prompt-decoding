@@ -15,7 +15,7 @@ import torch.nn.functional as F
 from prompt.utils import *
 from prompt.model.model import PromptDecoder, PromptConfig, AutoPromptDecoder
 from prompt.model.modeling_llama_custom import LlamaForCausalLM as CustomLlamaForCausalLM
-from peft import get_peft_model, LoraConfig
+from peft import get_peft_model, LoraConfig, get_peft_model_state_dict, set_peft_model_state_dict   
 
 IGNORE_TOKEN_ID = LabelSmoother.ignore_index
 
@@ -236,6 +236,7 @@ def train():
         for param in base_model.base_model.parameters():
             param.requires_grad = False
         prompt_model = PromptDecoder(base_model, peft_config)
+        print([key for key in prompt_model.get_peft_model_state_dict().keys()])
         prompt_model.print_trainable_parameters()
         model  = get_peft_model(prompt_model, lora_config)
         # make prompt model trainable
@@ -243,7 +244,13 @@ def train():
             if 'prompt_encoder' in n:
                 print(n)
                 param.requires_grad = True
+        print(prompt_model.peft_config)
     model.print_trainable_parameters()
+    print([key for key in get_peft_model_state_dict(model).keys()])
+    set_peft_model_state_dict(model, get_peft_model_state_dict(model))
+    print([key for key in prompt_model.get_peft_model_state_dict().keys()])
+    prompt_model.set_peft_model_state_dict(prompt_model.get_peft_model_state_dict())
+
 
     # Output dir
     training_args.output_dir = f"{training_args.output_dir}/prompt_{model_args.model_name_or_path.split('/')[-1]}_{model_args.num_special_tokens}_{model_args.virtual_tokens_per_special_token}_cl{training_args.model_max_length}_{model_args.vt_attention_type.upper()}_{model_args.aggregation_type}{'_custom_lm_head' if model_args.use_custom_lm_head else ''}{'_prefix' + str(model_args.prefix_virtual_tokens) if model_args.use_prefix_tuning else ''}_exits{model_args.num_exits}"
