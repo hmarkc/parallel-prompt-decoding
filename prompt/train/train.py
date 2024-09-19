@@ -44,17 +44,28 @@ class ParamEfficientFineTuner(Trainer):
         )
         logits = outputs.logits
 
+        loss = 0
         # Calculate loss on the prompt tokens
         prompt_logits = logits[:, -num_special_tokens:, :].contiguous()
         prompt_labels = labels[..., -num_special_tokens:].contiguous()
         prompt_labels = prompt_labels.to(logits.device)
-        loss = 0
-        loss_fn = CrossEntropyLoss()
+        pdd_loss = 0
+        loss_fn = torch.nn.CrossEntropyLoss()
         decay_coefficient = 0.8
         for i in range(num_special_tokens):
-            loss += loss_fn(prompt_logits[:, i, :], prompt_labels[:, i]) * (decay_coefficient ** i)
+            pdd_loss += loss_fn(prompt_logits[:, i, :], prompt_labels[:, i]) * (decay_coefficient ** i)
         if num_special_tokens > 0:
-            loss /= num_special_tokens
+            pdd_loss /= num_special_tokens
+        
+        # Calculate loss on the rest of the tokens
+        # rest_logits = logits[:, :-num_special_tokens, :].contiguous()
+        # rest_labels = labels[..., :-num_special_tokens].contiguous()
+        # rest_labels = rest_labels.to(logits.device)
+        # rest_loss = loss_fn(rest_logits.view(-1, rest_logits.size(-1)), rest_labels.view(-1))
+        
+        # Combine the two losses, with a coefficient 0.2, same as Medusa-2
+        loss = 0.2 * pdd_loss 
+            
         return (loss, outputs) if return_outputs else loss
 
 
@@ -236,7 +247,6 @@ def train():
         for param in base_model.base_model.parameters():
             param.requires_grad = False
         prompt_model = PromptDecoder(base_model, peft_config)
-        print([key for key in prompt_model.get_peft_model_state_dict().keys()])
         prompt_model.print_trainable_parameters()
         model  = get_peft_model(prompt_model, lora_config)
         # make prompt model trainable
@@ -244,13 +254,15 @@ def train():
             if 'prompt_encoder' in n:
                 print(n)
                 param.requires_grad = True
-        print(prompt_model.peft_config)
-        print(type(model.base_model.model), type(model.model))
     model.print_trainable_parameters()
-    print([key for key in get_peft_model_state_dict(model).keys()])
     set_peft_model_state_dict(model, get_peft_model_state_dict(model))
-    print([key for key in model.base_model.model.get_peft_model_state_dict().keys()])
-    model.model.set_peft_model_state_dict(model.model.get_peft_model_state_dict())
+    state_dict = model.model.get_peft_model_state_dict()
+    params = [v.cpu().numpy() for _, v in state_dict.items()]
+    keys = state_dict.keys()
+    params_dict = zip(keys, params)
+    from collections import OrderedDict
+    state_dict = OrderedDict({k: torch.Tensor(v) for k, v in params_dict})
+    model.model.set_peft_model_state_dict(state_dict)
 
 
     # Output dir
@@ -314,7 +326,8 @@ def train():
     # Save model
     model.save_pretrained(training_args.output_dir)
     # Save ppd
-    model.base_model.model.save_pretrained(f"{training_args.output_dir}/ppd")
+    print(type(model.model))
+    model.model.save_pretrained(f"{training_args.output_dir}/ppd")
 
 if __name__ == "__main__":
     train()

@@ -843,11 +843,15 @@ class PromptDecoder(PeftModel):
 
 
     def save_pretrained(self, save_directory: str, **kwargs):
+        print("Saving model to", save_directory)
+        prev_peft_config = self.peft_config
+        self.peft_config = self.prompt_peft_config
         super().save_pretrained(save_directory, **kwargs)
         if hasattr(self, "weighting_layers"):
             torch.save(self.weighting_layers.state_dict(), os.path.join(save_directory, "weighting_layers.pt"))
         if hasattr(self, "custom_lm_head"):
             torch.save(self.custom_lm_head.state_dict(), os.path.join(save_directory, "custom_lm_head.pt"))
+        self.peft_config = prev_peft_config
         # if hasattr(self, "exit_weights"):
         #     torch.save(self.exit_weights, os.path.join(save_directory, "exit_weights.pt"))
 
