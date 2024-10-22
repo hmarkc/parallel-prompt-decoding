@@ -752,6 +752,7 @@ class PromptDecoder(PeftModel):
         input_len = input_ids.shape[1]
         logits, prompt_logits = self.start_inference(input_ids, past_key_values, current_length_data)
         new_token = 0
+        accept_lengths = []
         
         for idx in range(max_steps): 
             candidates, tree_candidates_embeds = self.generate_candidates(
@@ -781,10 +782,13 @@ class PromptDecoder(PeftModel):
                 current_length_data,
             )
             
-            yield input_ids
+            # yield input_ids, accept_length # will break the gui 
+            accept_lengths.append(accept_length.cpu().item())
 
             if tokenizer.eos_token_id in input_ids[0, input_len:].tolist():
                 break
+        
+        return input_ids, accept_lengths
     
     @torch.inference_mode()
     def naive_generate(self, input_ids, max_steps = 512, temperature=0.7, posterior_threshold = 0.09, posterior_alpha = 0.3, sampling='greedy', max_new_token=512):
